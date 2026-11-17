@@ -88,7 +88,7 @@ def main():
         require(request(root,f'/jobs/{job_id}',token=admin)[0]==200,f'{name}: admin cannot view')
         print(f'PASS {name}: {job_id} => done, critical={critical}')
     print('PASS: all five synthetic samples processed; auth and admin checks passed.')
-    print('Next: verify second-radiologist isolation and critical alert logs manually (STEP7.md).')
+    print('Next: verify second-radiologist isolation and critical alert logs manually.')
 
 if __name__=='__main__':
     try: main()
