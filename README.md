@@ -126,3 +126,13 @@ Do not run `docker compose down -v` unless you deliberately intend to delete loc
 
 Transactional outbox/requeue recovery; durable alert delivery with deduplication and audit; request rate limiting; richer metrics/tracing and structured redacted logs; standardized terminology and clinician-reviewed safety evaluation; more providers; stronger model evaluation; CI integration (a basic GitHub Actions workflow is provided as an optional demonstration).
 
+## Continuous Integration
+
+GitHub Actions runs automated tests on pushes and pull requests
+to the main branch.
+
+The workflow starts the application using Docker Compose,
+applies Alembic migrations, and runs the pytest suite in
+mock LLM mode.
+
+No external LLM API key is required for CI.

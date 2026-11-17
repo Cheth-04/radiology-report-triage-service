@@ -1,0 +1,64 @@
+
+name: Radiology Triage CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure test environment
+        run: |
+          cp .env.example .env
+          python3 - <<'PY'
+          from pathlib import Path
+          import secrets
+
+          path = Path(".env")
+          content = path.read_text()
+
+          content = content.replace(
+              "replace-with-a-long-random-secret",
+              secrets.token_hex(32)
+          )
+          content = content.replace(
+              "LLM_MODE=lmstudio",
+              "LLM_MODE=mock"
+          )
+
+          path.write_text(content)
+          PY
+
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+
+      - name: Build and start services
+        run: docker compose up --build -d
+
+      - name: Check database migration
+        run: |
+          docker compose exec -T api \
+            alembic current
+
+      - name: Run unit tests
+        run: |
+          docker compose run --rm \
+            -v "$PWD/tests:/code/tests:ro" \
+            api python -m pytest -q tests/
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker compose logs --tail=100
+
+      - name: Stop services
+        if: always()
+        run: docker compose down
+
