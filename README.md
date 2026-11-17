@@ -47,7 +47,9 @@ Create the first admin interactively (one-time bootstrap):
 docker compose exec -it api python -m app.scripts.create_admin admin@example.com
 ```
 
-Then use `POST /auth/login` (`username` is the admin email, as OAuth2 form data) and `POST /auth/users` with a bearer token to create a radiologist. Login as that radiologist and submit a sample with `POST /reports`. Poll `GET /jobs/{job_id}` for the final structured result. See [Demo & review guide](REVIEW_GUIDE.md) for a full walkthrough.
+Then use `POST /auth/login` (`username` is the admin email, as OAuth2 form data) and `POST /auth/users` with a bearer token to create a radiologist. Login as that radiologist and submit a sample with `POST /reports`. Poll `GET /jobs/{job_id}` for the final structured result. Use the interactive Swagger UI at
+http://localhost:8000/docs to test authentication,
+report submission, and job status retrieval.
 
 **First-run clarification:** `docker compose up` starts the services and creates database schema; interactive admin bootstrap is intentionally separate. Mock mode requires no API key and no LM Studio process.
 
@@ -98,7 +100,7 @@ python3 scripts/e2e_smoke.py --url http://localhost:8000 \
 docker compose logs --tail=300 worker | grep 'CRITICAL TRIAGE ALERT'
 ```
 
-The smoke script prompts for credentials (no passwords in shell history), submits all five assignment samples, polls job completion, checks output classifications and admin visibility. Also test isolation manually with a second radiologist. See [STEP7.md](STEP7.md) and [submission checklist](SUBMISSION_CHECKLIST.md).
+The smoke script prompts for credentials (no passwords in shell history), submits all five assignment samples, polls job completion, checks output classifications and admin visibility. Also test isolation manually with a second radiologist. 
 
 ## Design decisions and trade-offs
 
@@ -124,9 +126,3 @@ Do not run `docker compose down -v` unless you deliberately intend to delete loc
 
 Transactional outbox/requeue recovery; durable alert delivery with deduplication and audit; request rate limiting; richer metrics/tracing and structured redacted logs; standardized terminology and clinician-reviewed safety evaluation; more providers; stronger model evaluation; CI integration (a basic GitHub Actions workflow is provided as an optional demonstration).
 
-## Interview / support documents
-
-- [REVIEW_GUIDE.md](REVIEW_GUIDE.md) — architecture walkthrough, live edit ideas, demo order
-- [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) — safety and repository QA gates
-- [STEP7.md](STEP7.md) — test coverage and end-to-end verification
-- [STEP2.md](STEP2.md) through [STEP6.md](STEP6.md) — incremental implementation notes
